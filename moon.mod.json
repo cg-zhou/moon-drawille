@@ -3,7 +3,13 @@
   "version": "0.1.0",
   "readme": "README.mbt.md",
   "repository": "",
-  "license": "Apache-2.0",
-  "keywords": [],
-  "description": ""
+  "license": "MIT",
+  "keywords": [
+    "terminal",
+    "braille",
+    "graphics",
+    "ansi",
+    "color"
+  ],
+  "description": "MoonBit port of drawille for terminal graphics with Unicode Braille characters"
 }

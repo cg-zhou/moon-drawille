@@ -1,6 +1,7 @@
-// import {
-//   "cg-zhou/drawille" @lib,
-// }
+import {
+  "cg-zhou/drawille" @drawille,
+  "moonbitlang/core/math",
+}
 
 options(
   "is-main": true,
