@@ -1,0 +1,7 @@
+// import {
+//   "cg-zhou/drawille" @lib,
+// }
+
+options(
+  "is-main": true,
+)
