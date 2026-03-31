@@ -2,7 +2,7 @@
 
 Terminal graphics library using Unicode Braille characters for MoonBit.
 
-![Snapshot](snapshot.png)
+![Snapshot](https://cdn.jsdelivr.net/gh/cg-zhou/moon-drawille@main/snapshot.png)
 
 ## Overview
 
