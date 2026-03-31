@@ -1,6 +1,7 @@
 import {
   "cg-zhou/drawille" @drawille,
   "moonbitlang/core/math",
+  "moonbitlang/core/env",
 }
 
 options(

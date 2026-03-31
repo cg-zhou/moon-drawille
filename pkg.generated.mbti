@@ -1,0 +1,95 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "cg-zhou/drawille"
+
+// Values
+pub fn clamp_rgb(Int) -> Int
+
+pub fn default_render_options() -> RenderOptions
+
+pub fn default_style() -> Style
+
+pub fn palette256(Int) -> Color
+
+pub fn rgb(Int, Int, Int) -> Color
+
+pub fn with_fg(Style, Color) -> Style
+
+pub fn without_ansi(RenderOptions) -> RenderOptions
+
+// Errors
+
+// Types and methods
+pub enum BasicColor {
+  Black
+  Red
+  Green
+  Yellow
+  Blue
+  Magenta
+  Cyan
+  White
+}
+pub impl Eq for BasicColor
+pub impl Show for BasicColor
+
+pub struct Canvas {
+  cells : Map[(Int, Int), Cell]
+}
+pub fn Canvas::clear(Self) -> Unit
+pub fn Canvas::new() -> Self
+pub fn Canvas::render(Self, options? : RenderOptions) -> String
+pub fn Canvas::set(Self, Int, Int) -> Unit
+pub fn Canvas::set_style(Self, Int, Int, Style) -> Unit
+pub fn Canvas::set_text(Self, Int, Int, String, style? : Style) -> Unit
+pub fn Canvas::stroke_line(Self, Int, Int, Int, Int, style? : Style) -> Unit
+pub fn Canvas::unset(Self, Int, Int) -> Unit
+
+type Cell
+
+pub enum Color {
+  Default
+  Ansi(BasicColor, Bool)
+  Palette256(Int)
+  Rgb(Int, Int, Int)
+}
+pub impl Eq for Color
+pub impl Show for Color
+
+pub struct RenderOptions {
+  line_ending : String
+  enable_ansi : Bool
+  reset_each_line : Bool
+}
+pub impl Eq for RenderOptions
+pub impl Show for RenderOptions
+
+pub struct Style {
+  fg : Color
+  bg : Color
+  bold : Bool
+  underline : Bool
+  inverse : Bool
+}
+pub impl Eq for Style
+pub impl Show for Style
+
+pub struct Turtle {
+  canvas : Canvas
+  mut x : Double
+  mut y : Double
+  mut angle : Double
+  mut is_pen_down : Bool
+}
+pub fn Turtle::forward(Self, Double, style? : Style) -> Unit
+pub fn Turtle::left(Self, Int) -> Unit
+pub fn Turtle::new() -> Self
+pub fn Turtle::pen_down(Self) -> Unit
+pub fn Turtle::pen_up(Self) -> Unit
+pub fn Turtle::render(Self, options? : RenderOptions) -> String
+pub fn Turtle::right(Self, Int) -> Unit
+pub fn Turtle::turn(Self, Double) -> Unit
+
+// Type aliases
+
+// Traits
+
