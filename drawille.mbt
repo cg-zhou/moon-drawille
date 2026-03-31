@@ -13,14 +13,9 @@ pub enum BasicColor {
 
 ///|
 /// Public color abstraction for terminal styling.
-///
-/// `Ansi(color, bright)` represents the 16-color ANSI family.
-/// `Palette256(index)` represents xterm 256-color palette indices.
-/// `Rgb(r, g, b)` represents truecolor.
 pub enum Color {
   Default
   Ansi(BasicColor, Bool)
-  Palette256(Int)
   Rgb(Int, Int, Int)
 } derive(Eq, Show)
 
@@ -29,9 +24,6 @@ pub enum Color {
 pub struct Style {
   fg : Color
   bg : Color
-  bold : Bool
-  underline : Bool
-  inverse : Bool
 } derive(Eq, Show)
 
 ///|
@@ -56,16 +48,6 @@ struct Cell {
   mut braille : Int // 8-bit mask
   mut text : String
   mut style : Style
-}
-
-///|
-/// Stateful drawing helper layered on top of a logical canvas.
-pub struct Turtle {
-  canvas : Canvas
-  mut x : Double
-  mut y : Double
-  mut angle : Double // in degrees
-  mut is_pen_down : Bool
 }
 
 ///|
@@ -141,7 +123,7 @@ test "line_drawing" {
 ///|
 /// Default style with terminal default foreground/background and all flags off.
 pub fn default_style() -> Style {
-  { fg: Default, bg: Default, bold: false, underline: false, inverse: false }
+  { fg: Default, bg: Default }
 }
 
 ///|
@@ -153,13 +135,7 @@ pub fn default_render_options() -> RenderOptions {
 ///|
 /// Return a copy of a style with a different foreground color.
 pub fn with_fg(style : Style, fg : Color) -> Style {
-  {
-    fg,
-    bg: style.bg,
-    bold: style.bold,
-    underline: style.underline,
-    inverse: style.inverse,
-  }
+  { fg, bg: style.bg }
 }
 
 ///|
@@ -188,15 +164,6 @@ pub fn clamp_rgb(channel : Int) -> Int {
 /// Construct a truecolor value after clamping each channel.
 pub fn rgb(r : Int, g : Int, b : Int) -> Color {
   Rgb(clamp_rgb(r), clamp_rgb(g), clamp_rgb(b))
-}
-
-///|
-/// Construct a 256-color palette entry.
-///
-/// The final implementation should document whether out-of-range values are
-/// clamped, rejected, or preserved.
-pub fn palette256(index : Int) -> Color {
-  Palette256(index)
 }
 
 ///|
@@ -438,16 +405,6 @@ fn get_ansi_sequence(style : Style, prev : Style) -> String {
   let sb = StringBuilder::new()
   sb.write_string("\u001b[0") // Reset or start fresh
 
-  if style.bold {
-    sb.write_string(";1")
-  }
-  if style.underline {
-    sb.write_string(";4")
-  }
-  if style.inverse {
-    sb.write_string(";7")
-  }
-
   match style.fg {
     Default => ()
     Ansi(color, bright) => {
@@ -464,7 +421,6 @@ fn get_ansi_sequence(style : Style, prev : Style) -> String {
       let final_code = if bright { code + 60 } else { code }
       sb.write_string(";\{final_code}")
     }
-    Palette256(index) => sb.write_string(";38;5;\{index}")
     Rgb(r, g, b) => sb.write_string(";38;2;\{r};\{g};\{b}")
   }
 
@@ -484,78 +440,9 @@ fn get_ansi_sequence(style : Style, prev : Style) -> String {
       let final_code = if bright { code + 60 } else { code }
       sb.write_string(";\{final_code}")
     }
-    Palette256(index) => sb.write_string(";48;5;\{index}")
     Rgb(r, g, b) => sb.write_string(";48;2;\{r};\{g};\{b}")
   }
 
   sb.write_string("m")
   sb.to_string()
-}
-
-///|
-/// Create a turtle in its default state.
-pub fn Turtle::new() -> Turtle {
-  { canvas: Canvas::new(), x: 0.0, y: 0.0, angle: 0.0, is_pen_down: true }
-}
-
-///|
-/// Move the turtle forward while optionally applying a stroke style.
-pub fn Turtle::forward(
-  self : Turtle,
-  distance : Double,
-  style? : Style = default_style(),
-) -> Unit {
-  let rad = self.angle * 3.141592653589793 / 180.0
-  let nx = self.x + distance * @math.cos(rad)
-  let ny = self.y + distance * @math.sin(rad)
-  if self.is_pen_down {
-    self.canvas.stroke_line(
-      self.x.round().to_int(),
-      self.y.round().to_int(),
-      nx.round().to_int(),
-      ny.round().to_int(),
-      style~,
-    )
-  }
-  self.x = nx
-  self.y = ny
-}
-
-///|
-/// Turn the turtle clockwise by an angle unit.
-pub fn Turtle::turn(self : Turtle, angle : Double) -> Unit {
-  self.angle += angle
-}
-
-///|
-/// Turn the turtle clockwise by a whole-number angle unit.
-pub fn Turtle::right(self : Turtle, angle : Int) -> Unit {
-  self.angle += angle.to_double()
-}
-
-///|
-/// Turn the turtle counterclockwise by a whole-number angle unit.
-pub fn Turtle::left(self : Turtle, angle : Int) -> Unit {
-  self.angle -= angle.to_double()
-}
-
-///|
-/// Lift the pen so movement stops drawing.
-pub fn Turtle::pen_up(self : Turtle) -> Unit {
-  self.is_pen_down = false
-}
-
-///|
-/// Lower the pen so movement resumes drawing.
-pub fn Turtle::pen_down(self : Turtle) -> Unit {
-  self.is_pen_down = true
-}
-
-///|
-/// Render the turtle's underlying drawing surface.
-pub fn Turtle::render(
-  self : Turtle,
-  options? : RenderOptions = default_render_options(),
-) -> String {
-  self.canvas.render(options~)
 }
