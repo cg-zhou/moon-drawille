@@ -1,4 +1,4 @@
-# cg-zhou/drawille
+# Moon Drawille
 
 Terminal graphics library using Unicode Braille characters for MoonBit.
 
